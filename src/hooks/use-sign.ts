@@ -24,7 +24,7 @@ export const useSign = () => {
     validateCertificateDefinitionDto: ValidateCertificateDefinitionDto
   ) => {
     toggleLoading();
-    const certificate = await certificateRepository.validateCertificate(
+    const certificate = await certificateRepository.signDocument(
       validateCertificateDefinitionDto
     );
     if (!certificate) return toggleLoading();

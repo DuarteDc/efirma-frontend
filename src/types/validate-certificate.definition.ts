@@ -9,7 +9,7 @@ export interface ValidateCertificationResponseDefinition {
   readonly contenido: ValidateCertification;
 }
 
-interface ValidateCertification {
+export interface ValidateCertification {
   readonly serialNumber: string;
   readonly rfc: string;
   readonly email: string;

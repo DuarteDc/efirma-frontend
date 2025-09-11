@@ -30,7 +30,7 @@ export class CertificateRepository extends Http {
     try {
       const { contenido } =
         await this.post<ValidateCertificationResponseDefinition>(
-          "/validate/certificate",
+          "/validate/certificateOCSP",
           validateCertificate
         );
       return contenido;

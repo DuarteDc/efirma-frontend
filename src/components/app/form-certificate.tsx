@@ -4,6 +4,8 @@ import { useSign } from '../../hooks/use-sign'
 import { useReadeFiles } from '../../hooks/use-reade-files'
 import { LoadingScreen } from '../ui'
 import { usePdf } from '../../hooks/use-pdf'
+import { pdf } from '@react-pdf/renderer'
+import { SignPdf } from '../pdf/sign-pdf'
 
 export const FormCertificate = () => {
   const { loading, startValidateDocument, startSignDocument } = useSign()
@@ -19,8 +21,21 @@ export const FormCertificate = () => {
     },
     onSubmit: async () => {
       const cert = parseCertificate(await readAsBuffer(formik.values.crtInput!))
-      await startSignDocument({ cert })
-      editPDF(formik.values.archivoInput!)
+      const response = await startSignDocument({ cert })
+      if (!response) return
+      console.log(formik.values.archivoInput)
+      const fileCert = await (formik.values.crtInput! as File).arrayBuffer()
+      const pdfStream = await pdf(
+        <SignPdf
+          response={response}
+          file={formik.values.archivoInput!}
+          cert={fileCert}
+        />
+      )
+      editPDF(
+        formik.values.archivoInput!,
+        await (await pdfStream.toBlob()).arrayBuffer()
+      )
     }
   })
 
@@ -349,7 +364,6 @@ export const FormCertificate = () => {
                     type='submit'
                     name='firmar'
                     id='firmar'
-                    onClick={() => console.log('e')}
                   >
                     Firmar Documento
                   </button>

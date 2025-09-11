@@ -8,7 +8,6 @@ function App () {
       <Toaster />
       <Header />
       <FormCertificate />
-      <h1>Efirma</h1>
     </div>
   )
 }
