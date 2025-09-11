@@ -34,7 +34,8 @@ export const FormCertificate = () => {
       )
       editPDF(
         formik.values.archivoInput!,
-        await (await pdfStream.toBlob()).arrayBuffer()
+        await (await pdfStream.toBlob()).arrayBuffer(),
+        response
       )
     }
   })

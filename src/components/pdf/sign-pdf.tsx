@@ -156,13 +156,41 @@ export const SignPdf = ({ response, file, cert }: Props) => {
         </View>
         {/* Texto al pie */}
         <View style={styles.footer}>
-          <Text style={styles.textTitle}>
-            Archivo firmado por: CINDY GONZALEZ PIÑA
-          </Text>
-          <Text style={styles.textTitle}>{formatDate('es-MX')}</Text>
-          <Text style={styles.textTitle}>
-            {formatDate('es-MX', parseCustomDate(response.fechaFinal))}
-          </Text>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 4,
+              alignItems: 'center'
+            }}
+          >
+            <Text style={styles.textTitle}>Archivo firmado por:</Text>
+            <Text style={styles.text}>{response.oData}</Text>
+          </View>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 4,
+              alignItems: 'center'
+            }}
+          >
+            <Text style={styles.textTitle}>Fecha de firma:</Text>
+            <Text style={styles.text}>{formatDate('es-MX')}</Text>
+          </View>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 4,
+              alignItems: 'center'
+            }}
+          >
+            <Text style={styles.textTitle}>Vigencia del certificado:</Text>
+            <Text style={styles.text}>
+              {formatDate('es-MX', parseCustomDate(response.fechaFinal))}
+            </Text>
+          </View>
         </View>
         {/* QR */}
         {/* <Image style={styles.qr} src={'asdhilasdhashdjlk'} /> */}
