@@ -13,24 +13,27 @@ import {
 } from '../ui/form'
 import { Input } from '../ui/input'
 import type z from 'zod'
-import { LoginFormSchema } from '../schemas/login-form.schema'
+import { LoginFormSchema } from '../../schemas/login-form.schema'
 import { UploadIcon } from '../icons'
+import { useAuth } from '@/hooks/use-auth'
 
 export const LoginForm = () => {
+  const { loading, startLogin } = useAuth()
+
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       rfc: '',
       password: '',
-      cert: undefined
+      certificate: undefined
     }
   })
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(() => {})}
-        className='grid gap-6 p-10 backdrop-blur-xl border border-white/10 rounded-2xl bg-white/5 shadow-2xl'
+        onSubmit={form.handleSubmit(startLogin)}
+        className='grid gap-6 p-10 backdrop-blur-xl border border-white/10 rounded-2xl bg-white/5 shadow-2xl form-animate'
       >
         <h2 className='text-center text-4xl font-bold'>Iniciar Sesión</h2>
         <p className='text-sm text-center font-bold text-gray-400'>
@@ -76,7 +79,7 @@ export const LoginForm = () => {
         />
         <FormField
           control={form.control}
-          name='cert'
+          name='certificate'
           render={({ field: { value, onChange, ...fieldProps } }) => (
             <FormItem>
               <FormLabel>Certificado Digital</FormLabel>
@@ -98,25 +101,22 @@ export const LoginForm = () => {
                   >
                     <UploadIcon className='h-4 w-4 mr-2 text-white' />
                     <span className='text-sm text-white'>
-                      {form.getValues().cert
-                        ? form.getValues().cert.name
+                      {form.getValues().certificate
+                        ? form.getValues().certificate.name
                         : 'Seleccionar certificado'}
                     </span>
                   </label>
-                  {/* {certificate && (
-                <div className="flex items-center mt-1 text-sm text-accent">
-                  <Shield className="h-3 w-3 mr-1" />
-                  Certificado cargado correctamente
-                </div>
-              )} */}
                 </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className='py-6 rounded-xl font-bold cursor-pointer hover:scale-[1.01] transition-all duration-300'>
-          Iniciar sesión
+        <Button
+          className='py-6 rounded-xl font-bold cursor-pointer hover:scale-[1.01] transition-all duration-300'
+          disabled={loading}
+        >
+          {loading ? <div className='loader'></div> : 'Iniciar sesión'}
         </Button>
         <div className='mt-6 text-center text-sm'>
           <span className='text-gray-300'>¿No tienes una cuenta? </span>

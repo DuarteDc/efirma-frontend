@@ -13,7 +13,7 @@ export const LoginFormSchema = z.object({
   password: z
     .string()
     .min(6, { message: "La contraseña debe tener más de 5 caracteres." }),
-  cert: z
+  certificate: z
     .any()
     .refine((f): f is File => f instanceof File, {
       message: "Debes seleccionar un archivo válido.",
