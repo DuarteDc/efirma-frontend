@@ -22,7 +22,7 @@ export const LoginPage = () => {
       </header>
       <div className='grid items-center h-[calc(100vh-20rem)] grid-cols-2 p-20 gap-10'>
         <div className='grid'>
-          <h1 className='signer-text text-9xl my-10'>Firma electronica</h1>
+          <h1 className='signer-text text-9xl my-10'>Firma Electronica</h1>
           <hr className='h-line' />
           <p className='text-2xl main-title'>
             E<b className='text-red-600'>-</b>firma

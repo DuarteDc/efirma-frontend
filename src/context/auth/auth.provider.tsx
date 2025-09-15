@@ -1,6 +1,7 @@
 import { useReducer, type ReactNode } from 'react'
 import { AuthContext } from './auth.context'
 import { authReducer, type AuthState } from './auth.reducer'
+import type { User } from '@/types/login.definition'
 
 interface Props {
   children: ReactNode
@@ -13,8 +14,12 @@ const initialState: AuthState = {
 export const AuthProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(authReducer, initialState)
 
+  const handleLogin = (user: User) => {
+    dispatch({ type: 'ACTION-LOGIN', payload: user })
+  }
+
   return (
-    <AuthContext.Provider value={{ ...state, dispatch }}>
+    <AuthContext.Provider value={{ ...state, dispatch, handleLogin }}>
       {children}
     </AuthContext.Provider>
   )

@@ -1,11 +1,13 @@
 import type { User } from "@/types/login.definition";
 
-export type AuthActionType = { type: "ACTION-LOGIN"; payload: User };
+export type AuthActionType =
+  | { type: "ACTION-LOGIN"; payload: User }
+  | { type: "AUTH-REFRESH"; payload: User };
 export interface AuthState {
   user: User | null;
 }
 
-export const authReducer = (action: AuthActionType, state: AuthState) => {
+export const authReducer = (state: AuthState, action: AuthActionType) => {
   switch (action.type) {
     case "ACTION-LOGIN":
       return {
