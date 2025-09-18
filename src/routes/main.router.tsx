@@ -1,18 +1,15 @@
-import { Route, Routes } from 'react-router'
-import { LoginPage } from '../modules/auth/pages/login.page'
+import { Route, Routes } from 'react-router-dom'
 import {
   AuthMiddleware,
   PrivateMiddleware,
   PublicMiddleware
 } from './middlewares'
+import { LoginPage } from '@/pages/login.page'
 import { AdminRoutes } from './admin.routes'
-import { NotFound } from '@/modules/core/pages'
-import { QrDataPage } from '@/modules/common/pages/qr-data.page'
 
 export const MainRouter = () => {
   return (
     <Routes>
-      <Route path='/verify-user/:id' index element={<QrDataPage />} />
       <Route
         path='/'
         index
@@ -25,7 +22,7 @@ export const MainRouter = () => {
         }
       />
       <Route
-        path='/admin/*'
+        path='/sign/*'
         index
         element={
           <AuthMiddleware>
@@ -35,7 +32,7 @@ export const MainRouter = () => {
           </AuthMiddleware>
         }
       />
-      <Route path='*' index element={<NotFound />} />
+      {/* <Route path='*' index element={<NotFound />} /> */}
     </Routes>
   )
 }

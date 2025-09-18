@@ -15,6 +15,12 @@ export const authReducer = (state: AuthState, action: AuthActionType) => {
         user: action.payload,
       };
 
+    case "AUTH-REFRESH":
+      return {
+        ...state,
+        user: action.payload,
+      };
+
     default:
       return state;
   }

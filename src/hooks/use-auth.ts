@@ -11,17 +11,17 @@ export const useAuth = () => {
 
   const toggleLoading = () => setLoading((prev) => !prev);
 
-  console.log(handleLogin);
   const startLogin = async (loginDto: LoginDefinitionDto) => {
     toggleLoading();
-    const user = await authRepository.login(loginDto);
+    const user = await authRepository.login({
+      ...loginDto,
+      rfc: loginDto.rfc.toUpperCase(),
+    });
     if (!user) return toggleLoading();
     handleLogin(user);
     toggleLoading();
     return user;
   };
-
-  console.log({ loading });
 
   return {
     loading,

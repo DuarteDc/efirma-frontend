@@ -14,11 +14,14 @@ import {
 import { Input } from '../ui/input'
 import type z from 'zod'
 import { LoginFormSchema } from '../../schemas/login-form.schema'
-import { UploadIcon } from '../icons'
+import { EeyeIcon, EyeOffIcon, UploadIcon } from '../icons'
 import { useAuth } from '@/hooks/use-auth'
+import { useState } from 'react'
 
 export const LoginForm = () => {
   const { loading, startLogin } = useAuth()
+
+  const [show, setShow] = useState(false)
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -65,13 +68,21 @@ export const LoginForm = () => {
             <FormItem>
               <FormLabel>Contraseña del Certificado</FormLabel>
               <FormControl>
-                <Input
-                  placeholder='••••••••'
-                  {...field}
-                  type='password'
-                  className='h-14 bg-black/20 focus:ring-red-600 focus:ring-2 rounded-xl focus:border-transparent transition-all'
-                  autoComplete='off'
-                />
+                <div>
+                  <Input
+                    placeholder='••••••••'
+                    {...field}
+                    type={show ? 'text' : 'password'}
+                    className='h-14 bg-black/20 focus:ring-red-600 focus:ring-2 rounded-xl focus:border-transparent transition-all'
+                    autoComplete='off'
+                  />
+                  <span
+                    className='absolute top-1/2 right-3 cursor-pointer'
+                    onClick={() => setShow(prev => !prev)}
+                  >
+                    {show ? <EyeOffIcon /> : <EeyeIcon />}
+                  </span>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

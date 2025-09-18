@@ -1,14 +1,15 @@
-import { FormCertificate } from './components/app/form-certificate'
-import { Header } from './components/ui'
+import { MainLayout } from './components/layouts'
 import { AuthProvider } from './context/auth'
+import { MainRouter } from './routes/main.router'
 
 function App () {
   return (
     <AuthProvider>
-      <div className='relative overflow-hidden inset-0 main min-h-screen'>
-        <Header />
-        <FormCertificate />
-      </div>
+      {/* <AuthMiddleware> */}
+      <MainLayout>
+        <MainRouter />
+      </MainLayout>
+      {/* </AuthMiddleware> */}
     </AuthProvider>
   )
 }

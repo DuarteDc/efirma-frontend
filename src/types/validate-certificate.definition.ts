@@ -2,6 +2,14 @@ export interface ValidateCertificateDefinitionDto {
   cert: string;
 }
 
+export interface DocumentRegisterDefinitionDto {
+  folioUnicoDocumento: number;
+  hashMerged: string;
+  hashOriginal: string;
+  hashSigned: string;
+  ocspData: string;
+}
+
 export interface ValidateCertificationResponseDefinition {
   readonly error: boolean;
   readonly errores: string[];
@@ -29,5 +37,5 @@ export interface ValidateCertification {
   readonly datosParticularesTramite: string;
   readonly datosDependenciaFirmante: string;
   readonly folioUnicoDocumento: number;
-  readonly ocspData: null;
+  readonly ocspData: null | string;
 }

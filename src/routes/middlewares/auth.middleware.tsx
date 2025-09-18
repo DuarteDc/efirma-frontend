@@ -1,25 +1,26 @@
-import type { ReactNode } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { useAuth } from '../../modules/auth/hooks/use-auth'
-import { LoaderScreen } from '../../modules/core/components/atoms'
+import { useContext, type ReactNode } from 'react'
+
+import { useFetcher } from '@/hooks/use-fetcher'
+import { AuthRepository } from '@/repositories/auth.repository'
+import { AuthContext } from '@/context/auth'
 
 interface Props {
   children: ReactNode | Array<ReactNode>
 }
 
-export const AuthMiddleware = ({ children }: Props) => {
-  const { startRefreshToken } = useAuth()
+const authRepository = new AuthRepository()
 
-  const { isLoading } = useQuery({
-    queryKey: ['/refersh'],
-    queryFn: startRefreshToken,
-    refetchIntervalInBackground: true,
-    refetchInterval: 1800000,
-    refetchOnWindowFocus: false
-  })
+export const AuthMiddleware = ({ children }: Props) => {
+  const { handleLogin } = useContext(AuthContext)
+
+  const { isLoading } = useFetcher(
+    '/api/v1/auth/refresh',
+    authRepository.getSession.bind(authRepository),
+    handleLogin
+  )
 
   if (isLoading) {
-    return <LoaderScreen />
+    return <></>
   }
 
   return children

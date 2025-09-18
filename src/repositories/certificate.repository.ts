@@ -1,14 +1,15 @@
 import type {
+  DocumentRegisterDefinitionDto,
   ValidateCertificateDefinitionDto,
   ValidateCertificationResponseDefinition,
 } from "../types/validate-certificate.definition";
-import { efirmaApiInstance } from "../libs/http/conf";
 import { Http } from "../libs/http/http";
-import { ErrorAlert } from "../components/ui/alets.ui";
+import { signApiInstance } from "@/libs/http/sign.conf";
+import { toast } from "sonner";
 
 export class CertificateRepository extends Http {
   constructor() {
-    super(efirmaApiInstance);
+    super(signApiInstance);
   }
 
   async validateCertificate(
@@ -22,7 +23,7 @@ export class CertificateRepository extends Http {
         );
       return contenido;
     } catch {
-      ErrorAlert({ title: "Error", message: "" });
+      toast.error("El certificado no es valido");
     }
   }
 
@@ -35,7 +36,20 @@ export class CertificateRepository extends Http {
         );
       return contenido;
     } catch {
-      ErrorAlert({ title: "Error", message: "" });
+      toast.error("El certificado no es valido");
+    }
+  }
+
+  async documentRegister(documentRegister: DocumentRegisterDefinitionDto) {
+    try {
+      const { contenido } =
+        await this.post<ValidateCertificationResponseDefinition>(
+          "/validate/documentRegister",
+          documentRegister
+        );
+      return contenido;
+    } catch {
+      toast.error("El certificado no es valido");
     }
   }
 }

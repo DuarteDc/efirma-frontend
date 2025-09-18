@@ -1,3 +1,7 @@
+export { EyeOffIcon } from "./eye-off.icon";
+
+export { EeyeIcon } from "./eye.icon";
+
 export { InfoIcon } from "./info.icon";
 
 export { XIcon } from "./x.icon";

@@ -5,5 +5,6 @@ import type { User } from "@/types/login.definition";
 interface AuthContextProps extends AuthState {
   dispatch: Dispatch<AuthActionType>;
   handleLogin: (user: User) => void;
+  handleRefresToken: (user: User) => void;
 }
 export const AuthContext = createContext({} as AuthContextProps);

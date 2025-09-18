@@ -18,8 +18,14 @@ export const AuthProvider = ({ children }: Props) => {
     dispatch({ type: 'ACTION-LOGIN', payload: user })
   }
 
+  const handleRefresToken = (user: User) => {
+    dispatch({ type: 'AUTH-REFRESH', payload: user })
+  }
+
   return (
-    <AuthContext.Provider value={{ ...state, dispatch, handleLogin }}>
+    <AuthContext.Provider
+      value={{ ...state, dispatch, handleLogin, handleRefresToken }}
+    >
       {children}
     </AuthContext.Provider>
   )

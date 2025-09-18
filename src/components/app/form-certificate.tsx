@@ -17,13 +17,14 @@ export const FormCertificate = () => {
       archivoInput: null,
       crtInput: null,
       keyInput: null,
+      rfc: '',
       passwordInput: ''
     },
     onSubmit: async () => {
       const cert = parseCertificate(await readAsBuffer(formik.values.crtInput!))
       const response = await startSignDocument({ cert })
       if (!response) return
-      console.log(formik.values.archivoInput)
+
       const fileCert = await (formik.values.crtInput! as File).arrayBuffer()
       const pdfStream = await pdf(
         <SignPdf
@@ -35,6 +36,8 @@ export const FormCertificate = () => {
       editPDF(
         formik.values.archivoInput!,
         await (await pdfStream.toBlob()).arrayBuffer(),
+        fileCert,
+        formik.values.passwordInput,
         response
       )
     }
@@ -150,8 +153,13 @@ export const FormCertificate = () => {
                         await readAsBuffer(event.target.files[0])
                       )
                       const result = await startValidateDocument({ cert })
-                      if (!result) return formik.setFieldValue('crtInput', null)
+                      if (!result) {
+                        formik.setFieldValue('crtInput', null)
+                        formik.setFieldValue('rfc', '')
+                        return
+                      }
                       formik.setFieldValue('crtInput', event.target.files[0])
+                      formik.setFieldValue('rfc', result.rfc)
                     }}
                     name='crtInput'
                     className='absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10'
@@ -335,7 +343,9 @@ export const FormCertificate = () => {
                   <input
                     type='text'
                     placeholder='Se extraerá automáticamente'
+                    name='rfc'
                     disabled
+                    value={formik.values.rfc}
                     id='RFC'
                     className='w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-slate-400 placeholder:text-slate-500 cursor-not-allowed'
                   />

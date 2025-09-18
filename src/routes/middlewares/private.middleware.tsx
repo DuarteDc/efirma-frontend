@@ -1,13 +1,13 @@
-import type { ReactNode } from 'react'
-import { Navigate } from 'react-router'
-import { useAuthStore } from '../../stores/auth/auth.store'
+import { useContext, type ReactNode } from 'react'
+import { Navigate } from 'react-router-dom'
+import { AuthContext } from '@/context/auth'
 
 interface Props {
   children: ReactNode | Array<ReactNode>
 }
 
 export const PrivateMiddleware = ({ children }: Props) => {
-  const logged = useAuthStore(state => state.logged)
+  const { user } = useContext(AuthContext)
 
-  return logged ? children : <Navigate to='/' replace />
+  return user ? children : <Navigate to='/' replace />
 }

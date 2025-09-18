@@ -2,17 +2,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
-import { LoginPage } from './pages/login.page.tsx'
 import { Toaster } from 'sonner'
-import { AuthProvider } from './context/auth/auth.provider.tsx'
+import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <Toaster position='top-center' />
-        <LoginPage />
-      </AuthProvider>
+      <Toaster position='top-center' />
+      <App />
     </BrowserRouter>
   </StrictMode>
 )
