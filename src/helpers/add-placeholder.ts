@@ -1,3 +1,4 @@
+import type { ValidateCertificationResponseDefinition } from "@/types/validate-certificate.definition";
 import {
   PDFDocument,
   PDFName,
@@ -5,25 +6,24 @@ import {
   PDFHexString,
   PDFString,
 } from "pdf-lib";
+import { PDFArrayCustom } from "./pdf-array-custom";
 
 type PDFPlaceholderInput = ArrayBuffer | Uint8Array;
 
 export async function pdfAddPlaceholder(
-  pdfMerged: PDFPlaceholderInput
+  pdfMerged: PDFPlaceholderInput,
+  response: ValidateCertificationResponseDefinition["contenido"]
 ): Promise<Uint8Array> {
   const pdfMergedLoaded = await PDFDocument.load(pdfMerged);
-
   // Placeholder para ByteRange
+  const ByteRange = new PDFArrayCustom(pdfMergedLoaded.context);
   const DEFAULT_BYTE_RANGE_PLACEHOLDER = "**********";
   const SIGNATURE_LENGTH = 14000;
 
-  const ByteRange: any = pdfMergedLoaded.context.obj([
-    PDFNumber.of(0),
-    PDFName.of(DEFAULT_BYTE_RANGE_PLACEHOLDER),
-    PDFName.of(DEFAULT_BYTE_RANGE_PLACEHOLDER),
-    PDFName.of(DEFAULT_BYTE_RANGE_PLACEHOLDER),
-  ]);
-
+  ByteRange.push(PDFNumber.of(0));
+  ByteRange.push(PDFName.of(DEFAULT_BYTE_RANGE_PLACEHOLDER));
+  ByteRange.push(PDFName.of(DEFAULT_BYTE_RANGE_PLACEHOLDER));
+  ByteRange.push(PDFName.of(DEFAULT_BYTE_RANGE_PLACEHOLDER));
   // Diccionario de la firma
   const signatureDict = pdfMergedLoaded.context.obj({
     Type: "Sig",
@@ -66,7 +66,14 @@ export async function pdfAddPlaceholder(
     })
   );
 
-  // Guardar PDF
+  pdfMergedLoaded.setTitle("");
+  pdfMergedLoaded.setAuthor("");
+  pdfMergedLoaded.setSubject("");
+  pdfMergedLoaded.setKeywords([""]);
+  pdfMergedLoaded.setProducer("");
+  pdfMergedLoaded.setCreator("");
+  pdfMergedLoaded.setCreationDate(new Date(response.timestamp));
+  pdfMergedLoaded.setModificationDate(new Date(response.timestamp));
   const pdfBytes = await pdfMergedLoaded.save({ useObjectStreams: false });
   return pdfBytes; // Uint8Array
 }

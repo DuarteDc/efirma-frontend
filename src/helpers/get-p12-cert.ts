@@ -10,10 +10,11 @@ export const getP12Cert = async (
   password: string,
   response: ValidateCertificationResponseDefinition["contenido"]
 ) => {
-  const privateKey = getPrivateKey(key, password);
-  const certificadoPem = getCert(cert);
+  const privateKey = await getPrivateKey(key, password);
+  const certificadoPem = await getCert(cert);
 
-  if (!certificadoPem || !privateKey) throw new Error("Error to read file");
+  if (!certificadoPem) throw new Error("Error to read cert file");
+  if (!privateKey) throw new Error("Error to read key file");
 
   const caStore = forge.pki.createCaStore([
     atob(response.certArc),
@@ -30,5 +31,10 @@ export const getP12Cert = async (
 
   const p12Der = forge.asn1.toDer(p12Asn1).getBytes();
 
-  return Buffer.from(p12Der, "binary");
+  const result = new Uint8Array(p12Der.length);
+  for (let i = 0; i < p12Der.length; i++) {
+    result[i] = p12Der.charCodeAt(i);
+  }
+
+  return result;
 };
