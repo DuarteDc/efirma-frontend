@@ -9,6 +9,9 @@
     }
   ],
   "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "@/*": [

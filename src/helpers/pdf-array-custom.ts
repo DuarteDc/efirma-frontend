@@ -1,4 +1,4 @@
-import { PDFArray, PDFContext, PDFObject } from "pdf-lib";
+import { CharCodes, PDFArray, PDFContext, PDFObject } from "pdf-lib";
 
 export class PDFArrayCustom {
   private array: PDFArray;
@@ -24,22 +24,41 @@ export class PDFArrayCustom {
   }
 
   clone(context?: PDFContext) {
-    const clone = PDFArrayCustom.withContext(context ?? this.array.context);
-    for (let idx = 0; idx < this.array.size(); idx++) {
+    const clone = PDFArrayCustom.withContext(context || this.array.context);
+    for (let idx = 0, len = this.size(); idx < len; idx++) {
       clone.push(this.array.get(idx));
     }
     return clone;
   }
 
   toString(): string {
-    return this.array.toString();
+    let arrayString = "[";
+    for (let idx = 0, len = this.size(); idx < len; idx++) {
+      arrayString += this.get(idx).toString();
+      if (idx < len - 1) arrayString += " ";
+    }
+    arrayString += "]";
+    return arrayString;
   }
 
   sizeInBytes(): number {
-    return this.array.sizeInBytes();
+    let size = 2;
+    for (let idx = 0, len = this.size(); idx < len; idx++) {
+      size += this.get(idx).sizeInBytes();
+      if (idx < len - 1) size += 1;
+    }
+    return size;
   }
 
   copyBytesInto(buffer: Uint8Array, offset: number): number {
-    return this.array.copyBytesInto(buffer, offset);
+    const initialOffset = offset;
+    buffer[offset++] = CharCodes.LeftSquareBracket;
+    for (let idx = 0, len = this.size(); idx < len; idx++) {
+      offset += this.get(idx).copyBytesInto(buffer, offset);
+      if (idx < len - 1) buffer[offset++] = CharCodes.Space;
+    }
+    buffer[offset++] = CharCodes.RightSquareBracket;
+
+    return offset - initialOffset;
   }
 }

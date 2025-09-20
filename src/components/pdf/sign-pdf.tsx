@@ -59,6 +59,12 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     alignSelf: 'flex-end'
+  },
+  link: {
+    marginTop: 20,
+    width: 500,
+    height: 120,
+    alignSelf: 'flex-start'
   }
 })
 
@@ -78,7 +84,7 @@ export const SignPdf = ({ response, file, cert }: Props) => {
         scale: 10,
         margin: 1,
         maskPattern: 4
-      }) // Aquí el contenido del QR
+      })
       setQrData(dataUrl)
     }
     generateQR()
@@ -113,7 +119,6 @@ export const SignPdf = ({ response, file, cert }: Props) => {
               <Text style={styles.text}>{response.rfc}</Text>
             </View>
           </View>
-
           <View style={styles.tableRow}>
             <View style={{ ...styles.tableCol, maxWidth: 100, width: 120 }}>
               <Text style={styles.textTitle}>Cadena del Documento</Text>
@@ -143,8 +148,23 @@ export const SignPdf = ({ response, file, cert }: Props) => {
               <Text style={styles.textTitle}>Certificado</Text>
             </View>
             <View style={{ ...styles.tableCol, flexGrow: 4 }}>
-              <Text style={styles.text}>
-                {chunkString(getCert(cert) ?? '', 70).map((line, i) => (
+              <Text style={{ ...styles.text, fontSize: 6 }}>
+                {chunkString(getCert(cert) ?? '', 110).map((line, i) => (
+                  <Text key={i}>
+                    {line}
+                    {'\n'}
+                  </Text>
+                ))}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={{ ...styles.tableCol, maxWidth: 100, width: 120 }}>
+              <Text style={styles.textTitle}>Validación certificado</Text>
+            </View>
+            <View style={{ ...styles.tableCol, flexGrow: 4 }}>
+              <Text style={{ ...styles.text, fontSize: 6 }}>
+                {chunkString(response.ocspData ?? '', 110).map((line, i) => (
                   <Text key={i}>
                     {line}
                     {'\n'}
@@ -192,9 +212,23 @@ export const SignPdf = ({ response, file, cert }: Props) => {
             </Text>
           </View>
         </View>
-        {/* QR */}
-        {/* <Image style={styles.qr} src={'asdhilasdhashdjlk'} /> */}
-        {qrData && <Image src={qrData} style={styles.qr} />}
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <View style={styles.link}>
+            <Text style={styles.textTitle}>
+              Vinculo para validar el documento:
+            </Text>
+            <Text style={styles.text}>
+              https://efirma.uaf.sspc.gob.mx/ws/document/validate
+            </Text>
+          </View>
+          {qrData && <Image src={qrData} style={styles.qr} />}
+        </View>
       </Page>
     </Document>
   )

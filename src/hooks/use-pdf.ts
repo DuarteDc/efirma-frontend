@@ -2,9 +2,12 @@ import { PDFDocument, rgb, StandardFonts, degrees } from "pdf-lib";
 import type { ValidateCertificationResponseDefinition } from "../types/validate-certificate.definition";
 import { useReadeFiles } from "./use-reade-files";
 import { formatDate } from "../utils/format-date";
-import { pdfAddPlaceholder } from "@/helpers/add-placeholder";
-import { getP12Cert } from "@/helpers/get-p12-cert";
-import { signFile } from "@/helpers/sign-file";
+import {
+  getP12Cert,
+  pdfAddPlaceholder,
+  sign,
+} from "@/helpers/sing/utilerias-pdf";
+import { readFile } from "@/helpers/sing/utilerias";
 
 export const usePdf = () => {
   const { getMd5StringFromBlob } = useReadeFiles();
@@ -48,16 +51,27 @@ export const usePdf = () => {
     );
     newPages.forEach((p) => pdfDoc.addPage(p));
 
-    const mergedBytes = await pdfDoc.save();
-    // const mergedBlob = new Blob([mergedBytes], { type: "application/pdf" });
-
+    const mergedBytes = await pdfDoc.save({ useObjectStreams: false });
     const pdfWithPlaceholder = await pdfAddPlaceholder(mergedBytes, response);
-    const p12Buffer = await getP12Cert(cert, key, password, response);
-
-    const pdf = await signFile(pdfWithPlaceholder, password, p12Buffer);
-
-    const url = window.URL.createObjectURL(pdf);
-    window.open(url);
+    readFile(cert).then(async (certReader) => {
+      console.log("Cert leído");
+      readFile(key).then(async (keyReader) => {
+        const p12Buffer = await getP12Cert(
+          certReader,
+          keyReader,
+          password,
+          response
+        );
+        const pdfFirmado = await sign(
+          pdfWithPlaceholder,
+          password,
+          p12Buffer,
+          response
+        );
+        const url = window.URL.createObjectURL(pdfFirmado);
+        window.open(url);
+      });
+    });
   };
   return {
     editPDF,

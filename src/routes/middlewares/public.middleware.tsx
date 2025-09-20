@@ -9,5 +9,5 @@ interface Props {
 export const PublicMiddleware = ({ children }: Props) => {
   const { user } = useContext(AuthContext)
 
-  return user ? <Navigate to={'/sign'} replace /> : children
+  return !user ? <Navigate to={'/sign'} replace /> : children
 }

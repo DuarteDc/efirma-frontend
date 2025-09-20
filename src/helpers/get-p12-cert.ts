@@ -1,4 +1,5 @@
 import forge from "node-forge";
+import { Buffer } from "buffer";
 
 import { getCert } from "./get-cert";
 import { getPrivateKey } from "./get-private-key";
@@ -31,10 +32,5 @@ export const getP12Cert = async (
 
   const p12Der = forge.asn1.toDer(p12Asn1).getBytes();
 
-  const result = new Uint8Array(p12Der.length);
-  for (let i = 0; i < p12Der.length; i++) {
-    result[i] = p12Der.charCodeAt(i);
-  }
-
-  return result;
+  return Buffer.from(p12Der, "binary");
 };

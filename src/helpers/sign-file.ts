@@ -13,19 +13,17 @@ export const signFile = async (
 ): Promise<Blob> => {
   const DEFAULT_BYTE_RANGE_PLACEHOLDER = "**********";
 
-  const pdfBlob = new Blob([pdfWithPlaceholder], { type: "application/pdf" });
-  const pdfText = await pdfBlob.text();
+  const pdfText = new TextDecoder("latin1").decode(pdfWithPlaceholder);
+  const byteRangeRegex =
+    /\/ByteRange\s*\[\s*(?:\d+|\*+)\s+(?:\d+|\*+)\s+(?:\d+|\*+)\s+(?:\d+|\*+)\s*\]/g;
 
-  const byteRangeStrings = pdfText.match(
-    /\/ByteRange\s*\[{1}\s*(?:(?:\d*|\/\*{10})\s+){3}(?:\d+|\/\*{10}){1}\s*]{1}/g
-  );
-  const byteRangePlaceholder = byteRangeStrings.find((s) =>
+  const byteRangeStrings = pdfText.match(byteRangeRegex);
+  const byteRangePlaceholder = byteRangeStrings?.find((s) =>
     s.includes(DEFAULT_BYTE_RANGE_PLACEHOLDER)
   );
+  if (!byteRangePlaceholder) throw new Error("ByteRange no encontrado");
 
-  let pdfBytes = new Uint8Array(pdfWithPlaceholder);
-
-  // ⚠️ latin1 también aquí
+  const pdfBytes = new Uint8Array(pdfWithPlaceholder);
   const pdfString = new TextDecoder("latin1").decode(pdfBytes);
 
   const byteRangePos = pdfString.indexOf(byteRangePlaceholder);
@@ -46,39 +44,36 @@ export const signFile = async (
     byteRangePlaceholder.length - actualByteRange.length
   );
 
-  // Reemplazar ByteRange en el PDF
   const beforeRange = pdfBytes.slice(0, byteRangePos);
   const afterRange = pdfBytes.slice(byteRangeEnd);
-  pdfBytes = new Uint8Array([
+  const updatedPdf = new Uint8Array([
     ...beforeRange,
     ...new TextEncoder().encode(actualByteRange),
     ...afterRange,
   ]);
 
-  // Extraer la parte que se firma (excluyendo el placeholder)
-  const part1 = pdfBytes.slice(0, byteRange[1]);
-  const part2 = pdfBytes.slice(byteRange[2], byteRange[2] + byteRange[3]);
+  const part1 = updatedPdf.slice(0, byteRange[1]);
+  const part2 = updatedPdf.slice(byteRange[2], byteRange[2] + byteRange[3]);
   const signedData = new Uint8Array([...part1, ...part2]);
 
-  // 🔑 Generar la firma (async)
   const rawSignature = await getSignature(p12Buffer, password, signedData);
-  const signatureHex = toHex(rawSignature);
+  let signatureHex = toHex(rawSignature);
 
-  // Rellenar con ceros hasta el tamaño del placeholder
   if (signatureHex.length > placeholderLength) {
     throw new Error("La firma es más grande que el espacio reservado");
   }
-  const paddedSignatureHex =
-    signatureHex + "0".repeat(placeholderLength - signatureHex.length);
 
-  // Insertar firma en el PDF
-  const beforeSig = pdfBytes.slice(0, byteRange[1]);
-  const afterSig = pdfBytes.slice(byteRange[1]);
-  pdfBytes = new Uint8Array([
+  signatureHex += "0".repeat(placeholderLength - signatureHex.length);
+  const signatureString = `<${signatureHex}>`;
+  const signatureBytes = new TextEncoder().encode(signatureString);
+
+  const beforeSig = updatedPdf.slice(0, placeholderPos);
+  const afterSig = updatedPdf.slice(placeholderEnd + 1);
+  const finalPdf = new Uint8Array([
     ...beforeSig,
-    ...new TextEncoder().encode(`<${paddedSignatureHex}>`),
+    ...signatureBytes,
     ...afterSig,
   ]);
 
-  return new Blob([pdfBytes], { type: "application/pdf" });
+  return new Blob([finalPdf], { type: "application/pdf" });
 };
